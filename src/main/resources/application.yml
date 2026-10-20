@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: todo-list
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:h2}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+app:
+  security:
+    user: ${APP_USER:admin}
+    password: ${APP_PASSWORD:admin123}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
