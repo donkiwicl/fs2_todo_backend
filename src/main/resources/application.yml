@@ -15,6 +15,13 @@ app:
   security:
     user: ${APP_USER:admin}
     password: ${APP_PASSWORD:admin123}
+  jwt:
+    # Solo para desarrollo: en producción definir JWT_SECRET (mínimo 32 bytes)
+    secret: ${JWT_SECRET:desarrollo-secreto-jwt-todo-list-cambiar-en-produccion}
+    expiracion: ${JWT_EXPIRACION:1h}
+    issuer: todo-list
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
 
 springdoc:
   swagger-ui:

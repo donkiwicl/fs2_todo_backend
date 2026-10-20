@@ -1,11 +1,13 @@
 package cl.duoc.todolist.controller;
 
+import cl.duoc.todolist.config.OpenApiConfig;
 import cl.duoc.todolist.dto.TodoRequest;
 import cl.duoc.todolist.dto.TodoResponse;
 import cl.duoc.todolist.service.TodoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -27,7 +29,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @RequestMapping("/api/todos")
 @RequiredArgsConstructor
-@Tag(name = "TODO", description = "Gestión de tareas")
+@Tag(name = "TODO", description = "Gestión de tareas. Lectura pública, escritura con JWT")
 public class TodoController {
 
     private final TodoService todoService;
@@ -49,8 +51,10 @@ public class TodoController {
 
     @PostMapping
     @Operation(summary = "Crear una tarea")
+    @SecurityRequirement(name = OpenApiConfig.BEARER_AUTH)
     @ApiResponse(responseCode = "201", description = "Tarea creada")
     @ApiResponse(responseCode = "400", description = "Datos inválidos")
+    @ApiResponse(responseCode = "401", description = "Requiere autenticación")
     public ResponseEntity<TodoResponse> crear(@Valid @RequestBody TodoRequest request) {
         TodoResponse creado = todoService.crear(request);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -62,31 +66,39 @@ public class TodoController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar una tarea")
+    @SecurityRequirement(name = OpenApiConfig.BEARER_AUTH)
     @ApiResponse(responseCode = "200", description = "Tarea actualizada")
     @ApiResponse(responseCode = "400", description = "Datos inválidos")
     @ApiResponse(responseCode = "404", description = "Tarea no encontrada")
+    @ApiResponse(responseCode = "401", description = "Requiere autenticación")
     public TodoResponse actualizar(@PathVariable Long id, @Valid @RequestBody TodoRequest request) {
         return todoService.actualizar(id, request);
     }
 
     @PatchMapping("/{id}/finalizar")
     @Operation(summary = "Marcar una tarea como finalizada")
+    @SecurityRequirement(name = OpenApiConfig.BEARER_AUTH)
     @ApiResponse(responseCode = "404", description = "Tarea no encontrada")
+    @ApiResponse(responseCode = "401", description = "Requiere autenticación")
     public TodoResponse finalizar(@PathVariable Long id) {
         return todoService.cambiarEstado(id, true);
     }
 
     @PatchMapping("/{id}/reabrir")
     @Operation(summary = "Marcar una tarea como pendiente")
+    @SecurityRequirement(name = OpenApiConfig.BEARER_AUTH)
     @ApiResponse(responseCode = "404", description = "Tarea no encontrada")
+    @ApiResponse(responseCode = "401", description = "Requiere autenticación")
     public TodoResponse reabrir(@PathVariable Long id) {
         return todoService.cambiarEstado(id, false);
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar una tarea")
+    @SecurityRequirement(name = OpenApiConfig.BEARER_AUTH)
     @ApiResponse(responseCode = "204", description = "Tarea eliminada")
     @ApiResponse(responseCode = "404", description = "Tarea no encontrada")
+    @ApiResponse(responseCode = "401", description = "Requiere autenticación")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         todoService.eliminar(id);
         return ResponseEntity.noContent().build();
